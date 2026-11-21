@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: http://localhost:4566 http://localhost.floci.io:4566; connect-src 'self' http://*.execute-api.localhost.floci.io:4566 http://localhost.floci.io:4566 http://localhost:3001 http://localhost:3002 http://localhost:3003; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta name="referrer" content="no-referrer">
+<title>Sign in - Shelter Adoption Portal</title>
+<link rel="stylesheet" href="css/style.css">
+<script type="module" src="js/login.js"></script>
+</head>
+<body>
+<main class="wrap narrow">
+  <div class="tabs" role="tablist">
+    <button type="button" role="tab" id="tab-in" aria-selected="true">Sign in</button>
+    <button type="button" role="tab" id="tab-up" aria-selected="false">Create account</button>
+  </div>
+  <div id="msg"></div>
+  <form id="signin" class="card form">
+    <label>Email <input name="email" type="email" required autocomplete="username" maxlength="120"></label>
+    <label>Password <input name="password" type="password" required autocomplete="current-password" minlength="8" maxlength="100"></label>
+    <button type="submit">Sign in</button>
+  </form>
+  <form id="signup" class="card form" hidden>
+    <label>Full name <input name="name" required maxlength="80" autocomplete="name"></label>
+    <label>Email <input name="email" type="email" required autocomplete="username" maxlength="120"></label>
+    <label>Password <input name="password" type="password" required autocomplete="new-password" minlength="8" maxlength="100"></label>
+    <p class="muted small">At least 8 characters with upper and lower case letters and a number. New accounts are adopter accounts; staff accounts are created by an administrator.</p>
+    <button type="submit">Create account</button>
+  </form>
+</main>
+</body>
+</html>
