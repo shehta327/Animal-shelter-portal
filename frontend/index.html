@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: http://localhost:4566 http://localhost.floci.io:4566; connect-src 'self' http://*.execute-api.localhost.floci.io:4566 http://localhost.floci.io:4566 http://localhost:3001 http://localhost:3002 http://localhost:3003; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta name="referrer" content="no-referrer">
+<title>Find a friend - Shelter Adoption Portal</title>
+<link rel="stylesheet" href="css/style.css">
+<script type="module" src="js/index.js"></script>
+</head>
+<body>
+<main class="wrap">
+  <section class="hero">
+    <h1>Meet the animals waiting for a home</h1>
+    <p>Browse, apply online, then book a meet-and-greet visit. Status updates arrive by email.</p>
+  </section>
+  <form id="filters" class="filters" role="search">
+    <label>Search <input name="q" maxlength="50" placeholder="Name, breed, description"></label>
+    <label>Species <select name="species"><option value="">Any</option><option value="dog">Dog</option><option value="cat">Cat</option><option value="rabbit">Rabbit</option><option value="bird">Bird</option><option value="other">Other</option></select></label>
+    <label>Size <select name="size"><option value="">Any</option><option value="small">Small</option><option value="medium">Medium</option><option value="large">Large</option></select></label>
+    <label>Max age <select name="maxAgeMonths"><option value="">Any</option><option value="12">Under 1 year</option><option value="36">Up to 3 years</option><option value="96">Up to 8 years</option></select></label>
+    <button type="submit">Search</button>
+  </form>
+  <div id="msg"></div>
+  <p id="count" class="muted"></p>
+  <div id="grid" class="grid" aria-live="polite"></div>
+</main>
+</body>
+</html>
