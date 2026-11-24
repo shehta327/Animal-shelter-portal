@@ -5,11 +5,12 @@ header('login');
 if (currentUser()) location.replace('index.html');
 
 const show = (up) => {
-  $('#signin').hidden = up;
-  $('#signup').hidden = !up;
+  $('#signin-panel').hidden = up;
+  $('#signup-panel').hidden = !up;
   $('#tab-in').setAttribute('aria-selected', String(!up));
   $('#tab-up').setAttribute('aria-selected', String(up));
 };
+show(false);
 $('#tab-in').addEventListener('click', () => show(false));
 $('#tab-up').addEventListener('click', () => show(true));
 
