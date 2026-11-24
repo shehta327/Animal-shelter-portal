@@ -8,7 +8,7 @@ else if (user.isStaff) location.replace('staff.html');
 const action = (label, fn) => actionButton(label, fn, { cls: 'secondary', confirmText: 'Click again to confirm', onDone: load });
 
 async function load() {
-  const [apps, bookings] = await Promise.all([api('/api/applications'), api('/api/visits/bookings')]);
+  const apps = await api('/api/applications');
   clear($('#apps'), apps.items.length
     ? el('table', { class: 'table' },
         el('thead', {}, el('tr', {}, ['Animal', 'Status', 'Visit', 'Submitted', ''].map((h) => el('th', {}, h)))),
@@ -22,17 +22,22 @@ async function load() {
             : null)))))
     : el('p', { class: 'muted' }, 'No applications yet. ', el('a', { href: 'index.html' }, 'Browse animals')));
 
-  clear($('#bookings'), bookings.items.length
-    ? el('table', { class: 'table' },
-        el('thead', {}, el('tr', {}, ['Animal', 'When', 'Status', ''].map((h) => el('th', {}, h)))),
-        el('tbody', {}, bookings.items.map((b) => el('tr', {},
-          el('td', {}, b.animalName),
-          el('td', {}, fmt(b.startsAt)),
-          el('td', {}, badge(b.status)),
-          el('td', {}, b.status === 'booked'
-            ? action('Cancel visit', () => api(`/api/visits/bookings/${b.id}`, { method: 'PATCH', body: { status: 'cancelled' } }))
-            : null)))))
-    : el('p', { class: 'muted' }, 'No visits booked.'));
+  try {
+    const bookings = await api('/api/visits/bookings');
+    clear($('#bookings'), bookings.items.length
+      ? el('table', { class: 'table' },
+          el('thead', {}, el('tr', {}, ['Animal', 'When', 'Status', ''].map((h) => el('th', {}, h)))),
+          el('tbody', {}, bookings.items.map((b) => el('tr', {},
+            el('td', {}, b.animalName),
+            el('td', {}, fmt(b.startsAt)),
+            el('td', {}, badge(b.status)),
+            el('td', {}, b.status === 'booked'
+              ? action('Cancel visit', () => api(`/api/visits/bookings/${b.id}`, { method: 'PATCH', body: { status: 'cancelled' } }))
+              : null)))))
+      : el('p', { class: 'muted' }, 'No visits booked.'));
+  } catch {
+    clear($('#bookings'), el('p', { class: 'muted' }, 'Visits are unavailable right now.'));
+  }
 }
 
 if (user && !user.isStaff) load().catch((e) => notice('#msg', e.message));

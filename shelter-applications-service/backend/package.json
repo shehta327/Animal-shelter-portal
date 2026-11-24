@@ -1,0 +1,23 @@
+{
+  "name": "shelter-applications-service",
+  "version": "1.0.0",
+  "description": "Adoption Applications service (owner: Tibah Abdulkareem) - Lambda + Neon Postgres + Secrets Manager + EventBridge + Resend",
+  "private": true,
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "zip": "node scripts/zip-lambda.js",
+    "migrate": "node db/migrate.js"
+  },
+  "dependencies": {
+    "@aws-sdk/client-eventbridge": "^3.700.0",
+    "@aws-sdk/client-secrets-manager": "^3.700.0",
+    "@neondatabase/serverless": "^1.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.0",
+    "express": "^5.1.0",
+    "jose": "^5.10.0",
+    "serverless-http": "^3.2.0"
+  }
+}

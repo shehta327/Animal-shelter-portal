@@ -1,0 +1,13 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    { "Sid": "ReadOwnSecretsOnly", "Effect": "Allow", "Action": "secretsmanager:GetSecretValue",
+      "Resource": ["arn:aws:secretsmanager:us-east-1:000000000000:secret:shelter/applications-db*",
+                   "arn:aws:secretsmanager:us-east-1:000000000000:secret:shelter/resend*"] },
+    { "Sid": "PublishOwnEvents", "Effect": "Allow", "Action": "events:PutEvents",
+      "Resource": "arn:aws:events:us-east-1:000000000000:event-bus/shelter-bus",
+      "Condition": { "StringEquals": { "events:source": "shelter.applications" } } },
+    { "Sid": "OwnLogsOnly", "Effect": "Allow", "Action": ["logs:CreateLogGroup", "logs:CreateLogStream", "logs:PutLogEvents"],
+      "Resource": "arn:aws:logs:us-east-1:000000000000:log-group:/aws/lambda/shelter-applications-api:*" }
+  ]
+}
