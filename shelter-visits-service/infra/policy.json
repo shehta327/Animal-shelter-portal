@@ -1,0 +1,20 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    { "Sid": "VisitsTableOnly", "Effect": "Allow",
+      "Action": ["dynamodb:GetItem", "dynamodb:PutItem", "dynamodb:UpdateItem", "dynamodb:DeleteItem", "dynamodb:Query", "dynamodb:Scan"],
+      "Resource": ["arn:aws:dynamodb:us-east-1:000000000000:table/ShelterVisits",
+                   "arn:aws:dynamodb:us-east-1:000000000000:table/ShelterVisits/index/*"] },
+    { "Sid": "OwnReminderSchedules", "Effect": "Allow", "Action": ["scheduler:CreateSchedule", "scheduler:DeleteSchedule"],
+      "Resource": "arn:aws:scheduler:us-east-1:000000000000:schedule/shelter-visit-reminders/visit-reminder-*" },
+    { "Sid": "HandSchedulerItsRole", "Effect": "Allow", "Action": "iam:PassRole",
+      "Resource": "arn:aws:iam::000000000000:role/shelter-visits-scheduler-role" },
+    { "Sid": "ReadResendKeyOnly", "Effect": "Allow", "Action": "secretsmanager:GetSecretValue",
+      "Resource": "arn:aws:secretsmanager:us-east-1:000000000000:secret:shelter/resend*" },
+    { "Sid": "PublishOwnEvents", "Effect": "Allow", "Action": "events:PutEvents",
+      "Resource": "arn:aws:events:us-east-1:000000000000:event-bus/shelter-bus",
+      "Condition": { "StringEquals": { "events:source": "shelter.visits" } } },
+    { "Sid": "OwnLogsOnly", "Effect": "Allow", "Action": ["logs:CreateLogGroup", "logs:CreateLogStream", "logs:PutLogEvents"],
+      "Resource": "arn:aws:logs:us-east-1:000000000000:log-group:/aws/lambda/shelter-visits-api:*" }
+  ]
+}
