@@ -22,7 +22,7 @@ else ok "pool exists: $POOL"; fi
 say "2. PreSignUp Lambda (auto-confirm; never grants a role)"
 ensure_role shelter-presignup-role infra/lambda-trust.json presignup-logs infra/presignup-policy.json
 node infra/zip.js infra/presignup infra/out/presignup.zip > /dev/null || { echo "Node.js is needed for the zip step"; exit 1; }
-ensure_function shelter-presignup shelter-presignup-role infra/out/presignup.zip index.handler 'Variables={NODE_ENV=production}' 5 128
+ensure_function shelter-presignup shelter-presignup-role infra/out/presignup.zip index.handler 'Variables={NODE_ENV=production}' 15 128
 aws lambda add-permission --function-name shelter-presignup --statement-id cognito-presignup --action lambda:InvokeFunction \
   --principal cognito-idp.amazonaws.com --source-arn "arn:aws:cognito-idp:$REGION:$ACCOUNT:userpool/$POOL" > /dev/null 2>&1
 # update-user-pool resets every setting it is not given, so the password policy is repeated here
@@ -63,6 +63,8 @@ grep -v '^#' "$SEED_FILE" | while read -r EMAIL PASS GROUP; do
   NAME=$(echo "${EMAIL%%@*}" | sed 's/^./\U&/; s/\([0-9]\)$/ \1/')
   aws cognito-idp admin-create-user --user-pool-id "$POOL" --username "$EMAIL" --message-action SUPPRESS \
     --user-attributes Name=email,Value="$EMAIL" Name=email_verified,Value=true Name=name,Value="$NAME" > /dev/null 2>&1
+  # the first sign-up trigger run is a cold start on Floci: wait until the user really exists
+  for i in 1 2 3 4 5 6 7 8 9 10; do aws cognito-idp admin-get-user --user-pool-id "$POOL" --username "$EMAIL" > /dev/null 2>&1 && break; sleep 2; done
   aws cognito-idp admin-set-user-password --user-pool-id "$POOL" --username "$EMAIL" --password "$PASS" --permanent > /dev/null
   [ -n "$GROUP" ] && aws cognito-idp admin-add-user-to-group --user-pool-id "$POOL" --username "$EMAIL" --group-name "$GROUP" > /dev/null
   ok "$EMAIL ${GROUP:-adopter}"
