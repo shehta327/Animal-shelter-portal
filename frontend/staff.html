@@ -7,11 +7,15 @@
 <meta name="referrer" content="no-referrer">
 <title>Staff dashboard - Shelter Adoption Portal</title>
 <link rel="stylesheet" href="css/style.css">
+<script src="js/theme.js"></script>
 <script type="module" src="js/staff.js"></script>
 </head>
 <body>
 <main class="wrap wide">
-  <h1>Staff dashboard</h1>
+  <div class="page-intro">
+    <h1>Staff dashboard</h1>
+    <p>Manage animals, review applications and run visits.</p>
+  </div>
   <div class="tabs" role="tablist">
     <button type="button" role="tab" data-tab="animals" aria-selected="true">Animals</button>
     <button type="button" role="tab" data-tab="applications" aria-selected="false">Applications</button>
@@ -22,5 +26,6 @@
   <section id="tab-applications" class="tabpanel" hidden></section>
   <section id="tab-visits" class="tabpanel" hidden></section>
 </main>
+<footer class="foot"><div><span>Shelter Adoption Portal</span><span>BUE Cloud Computing &amp; Cloud Security · Group A-1 · Team 01</span></div></footer>
 </body>
 </html>

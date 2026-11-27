@@ -7,13 +7,23 @@
 <meta name="referrer" content="no-referrer">
 <title>Find a friend - Shelter Adoption Portal</title>
 <link rel="stylesheet" href="css/style.css">
+<script src="js/theme.js"></script>
 <script type="module" src="js/index.js"></script>
 </head>
 <body>
 <main class="wrap">
   <section class="hero">
-    <h1>Meet the animals waiting for a home</h1>
-    <p>Browse, apply online, then book a meet-and-greet visit. Status updates arrive by email.</p>
+    <div>
+      <p class="kicker">Adopt, don't shop</p>
+      <h1>Meet the animals waiting for a home</h1>
+      <p class="lead">Browse, apply online, then book a meet-and-greet visit. Status updates arrive by email.</p>
+    </div>
+    <ol class="steps" aria-label="How adoption works">
+      <li><span><b>Browse</b> the animals that are available</span></li>
+      <li><span><b>Apply</b> online to adopt one</span></li>
+      <li><span><b>Book a visit</b> to meet them in person</span></li>
+      <li><span><b>Get approved</b> and take them home</span></li>
+    </ol>
   </section>
   <form id="filters" class="filters" role="search">
     <label>Search <input name="q" maxlength="50" placeholder="Name, breed, description"></label>
@@ -26,5 +36,6 @@
   <p id="count" class="muted"></p>
   <div id="grid" class="grid" aria-live="polite"></div>
 </main>
+<footer class="foot"><div><span>Shelter Adoption Portal</span><span>BUE Cloud Computing &amp; Cloud Security · Group A-1 · Team 01</span></div></footer>
 </body>
 </html>
