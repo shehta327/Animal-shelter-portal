@@ -1,0 +1,17 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    { "Sid": "AnimalsTableOnly", "Effect": "Allow",
+      "Action": ["dynamodb:GetItem", "dynamodb:PutItem", "dynamodb:UpdateItem", "dynamodb:Query"],
+      "Resource": ["arn:aws:dynamodb:us-east-1:000000000000:table/ShelterAnimals",
+                   "arn:aws:dynamodb:us-east-1:000000000000:table/ShelterAnimals/index/status-createdAt-index"] },
+    { "Sid": "PhotoObjectsOnly", "Effect": "Allow",
+      "Action": ["s3:GetObject", "s3:PutObject", "s3:DeleteObject"],
+      "Resource": "arn:aws:s3:::shelter-animal-photos/animals/*" },
+    { "Sid": "PublishOwnEvents", "Effect": "Allow", "Action": "events:PutEvents",
+      "Resource": "arn:aws:events:us-east-1:000000000000:event-bus/shelter-bus",
+      "Condition": { "StringEquals": { "events:source": "shelter.animals" } } },
+    { "Sid": "OwnLogsOnly", "Effect": "Allow", "Action": ["logs:CreateLogGroup", "logs:CreateLogStream", "logs:PutLogEvents"],
+      "Resource": "arn:aws:logs:us-east-1:000000000000:log-group:/aws/lambda/shelter-animals-api:*" }
+  ]
+}
