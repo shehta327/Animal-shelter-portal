@@ -54,6 +54,9 @@ label.inline select { width: auto; }
 .grid-form h3, .grid-form .full, .grid-form > div { grid-column: 1 / -1; margin: 0; }
 .inline-form { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); align-items: end; }
 .inline-form > div { grid-column: 1 / -1; }
+.inline-form button[type=submit] { justify-self: start; }
+.tabpanel .form { margin-bottom: 2rem; }
+.tabpanel h2 { margin-top: 1.5rem; }
 
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; }
 .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
@@ -90,8 +93,10 @@ label.inline select { width: auto; }
 .table { width: 100%; border-collapse: collapse; background: var(--surface); border-radius: var(--radius); overflow: hidden; }
 .table th, .table td { text-align: left; padding: .6rem .75rem; border-bottom: 1px solid var(--line); vertical-align: middle; }
 .table th { font-size: .8rem; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
-.table td.actions { display: flex; flex-wrap: wrap; gap: .4rem; align-items: center; }
-.table td.actions input:not([type=file]) { width: 12rem; }
+.table td.actions > * { margin: .15rem .3rem .15rem 0; vertical-align: middle; }
+.table td.actions input:not([type=file]) { width: 11rem; padding: .35rem .5rem; }
+.table button { padding: .35rem .75rem; font-size: .85rem; }
+.table td.actions input[type=file] { font-size: .8rem; }
 @media (max-width: 760px) {
   .table thead { display: none; }
   .table tr { display: grid; padding: .5rem 0; border-bottom: 1px solid var(--line); }
