@@ -20,6 +20,16 @@ pool_id() { aws cognito-idp list-user-pools --max-results 60 --query "UserPools[
 client_id() { aws cognito-idp list-user-pool-clients --user-pool-id "$1" --query "UserPoolClients[?ClientName=='shelter-web'].ClientId | [0]" --output text; }
 api_id() { aws apigatewayv2 get-apis --query "Items[?Name=='shelter-http-api'].ApiId | [0]" --output text; }
 
+# The issuer Cognito really writes into tokens depends on Floci's FLOCI_BASE_URL setting
+# (e.g. the Lab 7 / Floci Dash setup uses http://floci:4566). Read it from the pool's
+# OpenID discovery document instead of guessing; fall back to the default address.
+issuer_of() {
+  local found
+  found=$(curl -fsS --max-time 5 "${AWS_ENDPOINT_URL:-$PUBLIC_FLOCI}/$1/.well-known/openid-configuration" 2> /dev/null \
+    | node -e 'let s="";process.stdin.on("data",(d)=>{s+=d;}).on("end",()=>{try{process.stdout.write(JSON.parse(s).issuer||"");}catch(e){}});' 2> /dev/null)
+  echo "${found:-$PUBLIC_FLOCI/$1}"
+}
+
 ensure_role() { # name trust-file policy-name policy-file
   if ! aws iam get-role --role-name "$1" > /dev/null 2>&1; then
     aws iam create-role --role-name "$1" --assume-role-policy-document "file://$2" > /dev/null && ok "role $1 created"
@@ -53,7 +63,7 @@ platform_or_exit() {
   if none "$POOL" || none "$API"; then echo "The shared platform is missing: run infra/platform.sh in the shelter-web repo first."; exit 1; fi
   CLIENT=$(client_id "$POOL")
   API_URL="http://$API.execute-api.localhost.floci.io:4566"
-  COGNITO_ENV="COGNITO_ISSUER=$PUBLIC_FLOCI/$POOL,COGNITO_CLIENT_ID=$CLIENT,COGNITO_JWKS_URL=$INTERNAL_FLOCI/$POOL/.well-known/jwks.json"
+  COGNITO_ENV="COGNITO_ISSUER=$(issuer_of "$POOL"),COGNITO_CLIENT_ID=$CLIENT,COGNITO_JWKS_URL=$INTERNAL_FLOCI/$POOL/.well-known/jwks.json"
 }
 
 build_zip() { # run npm install + zip in backend/
