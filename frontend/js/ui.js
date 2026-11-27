@@ -47,6 +47,55 @@ export function age(months) {
 
 export const fmt = (iso) => new Date(iso).toLocaleString(undefined, { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
 
+// Inline SVG icons, built with createElementNS (no innerHTML).
+const SVG_NS = 'http://www.w3.org/2000/svg';
+const ICONS = {
+  paw: ['c:5.5,10,1.8', 'c:9.5,5.5,1.8', 'c:14.5,5.5,1.8', 'c:18.5,10,1.8', 'p:M12 12c-3 0-5.5 3.2-5.5 5.6 0 1.6 1.3 2.4 2.8 2.4 1.1 0 1.8-.6 2.7-.6s1.6.6 2.7.6c1.5 0 2.8-.8 2.8-2.4C17.5 15.2 15 12 12 12z'],
+  moon: ['p:M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z'],
+  sun: ['c:12,12,4', 'p:M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4']
+};
+export function icon(name) {
+  const svg = document.createElementNS(SVG_NS, 'svg');
+  svg.setAttribute('viewBox', '0 0 24 24');
+  svg.setAttribute('fill', 'none');
+  svg.setAttribute('stroke', 'currentColor');
+  svg.setAttribute('stroke-width', '2');
+  svg.setAttribute('stroke-linecap', 'round');
+  svg.setAttribute('stroke-linejoin', 'round');
+  svg.setAttribute('aria-hidden', 'true');
+  for (const part of ICONS[name]) {
+    const [kind, data] = part.split(':');
+    const node = document.createElementNS(SVG_NS, kind === 'c' ? 'circle' : 'path');
+    if (kind === 'c') { const [cx, cy, r] = data.split(','); node.setAttribute('cx', cx); node.setAttribute('cy', cy); node.setAttribute('r', r); }
+    else node.setAttribute('d', data);
+    svg.append(node);
+  }
+  return svg;
+}
+
+// Light / dark theme. The saved choice is applied early by js/theme.js; this adds the toggle.
+function isDark() {
+  const t = document.documentElement.dataset.theme;
+  return t ? t === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+}
+function themeToggle() {
+  const b = el('button', { type: 'button', class: 'theme-toggle' });
+  const paint = () => {
+    const dark = isDark();
+    b.setAttribute('aria-label', dark ? 'Switch to light mode' : 'Switch to dark mode');
+    b.title = b.getAttribute('aria-label');
+    b.replaceChildren(icon(dark ? 'sun' : 'moon'));
+  };
+  b.addEventListener('click', () => {
+    const next = isDark() ? 'light' : 'dark';
+    document.documentElement.dataset.theme = next;
+    try { localStorage.setItem('theme', next); } catch { /* storage blocked: still switches for this page */ }
+    paint();
+  });
+  paint();
+  return b;
+}
+
 export function header(active) {
   const user = currentUser();
   const link = (href, label, key) => el('a', { href, class: active === key ? 'active' : undefined }, label);
@@ -55,11 +104,14 @@ export function header(active) {
     user && !user.isStaff ? link('my.html', 'My adoption', 'my') : null,
     user && user.isStaff ? link('staff.html', 'Staff dashboard', 'staff') : null,
     user
-      ? el('span', { class: 'who' }, el('span', {}, user.name), el('span', { class: 'role' }, user.role),
+      ? el('span', { class: 'who' },
+          el('span', { class: 'avatar', 'aria-hidden': 'true' }, (user.name || '?').trim().charAt(0).toUpperCase()),
+          el('span', {}, user.name), el('span', { class: 'role' }, user.role),
           el('button', { class: 'link', type: 'button', onclick: () => { signOut(); location.href = 'index.html'; } }, 'Sign out'))
-      : link('login.html', 'Sign in', 'login'));
+      : link('login.html', 'Sign in', 'login'),
+    themeToggle());
   const bar = el('header', { class: 'top' },
-    el('a', { href: 'index.html', class: 'brand' }, el('span', { class: 'paw', 'aria-hidden': 'true' }, '●'), 'Shelter Adoption Portal'),
+    el('a', { href: 'index.html', class: 'brand' }, el('span', { class: 'logo' }, icon('paw')), 'Shelter Adoption Portal'),
     nav);
   document.body.prepend(bar);
   return user;
@@ -84,9 +136,9 @@ export function onSubmit(form, out, handler) {
 
 export function photoOf(animal, cls = 'photo') {
   const p = animal.photos && animal.photos[0];
-  return p
-    ? el('img', { class: cls, src: p.url, alt: `Photo of ${animal.name}`, loading: 'lazy' })
-    : el('div', { class: `${cls} placeholder`, 'aria-hidden': 'true' }, animal.species === 'cat' ? 'Cat' : animal.species === 'dog' ? 'Dog' : animal.species);
+  if (p) return el('img', { class: cls, src: p.url, alt: `Photo of ${animal.name}`, loading: 'lazy' });
+  const species = ['dog', 'cat', 'rabbit', 'bird'].includes(animal.species) ? animal.species : 'other';
+  return el('div', { class: `${cls} placeholder ph-${species}`, 'aria-hidden': 'true' }, icon('paw'));
 }
 
 // A button that runs an async action. With `confirmText`, the first click only

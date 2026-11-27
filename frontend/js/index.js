@@ -23,7 +23,8 @@ function card(a) {
     el('div', { class: 'body' },
       el('h3', {}, a.name),
       el('p', { class: 'muted' }, [a.breed || a.species, age(a.ageMonths), a.size].join(' · ')),
-      el('div', { class: 'tags' }, (a.temperament || []).slice(0, 3).map((t) => el('span', { class: 'tag' }, t.replace('_', ' '))))));
+      el('div', { class: 'tags' }, (a.temperament || []).slice(0, 3).map((t) => el('span', { class: 'tag' }, t.replace(/_/g, ' ')))),
+      el('span', { class: 'cta', 'aria-hidden': 'true' }, `Meet ${a.name}`)));
 }
 
 $('#filters').addEventListener('submit', (e) => {

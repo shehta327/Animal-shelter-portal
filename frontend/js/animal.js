@@ -34,7 +34,7 @@ function renderAnimal(a) {
       el('dl', { class: 'facts' },
         fact('Species', a.species), fact('Breed', a.breed || '-'), fact('Sex', a.sex), fact('Age', age(a.ageMonths)), fact('Size', a.size),
         fact('Vaccinated', a.vaccinated ? 'Yes' : 'No'), fact('Neutered', a.neutered ? 'Yes' : 'No')),
-      el('div', { class: 'tags' }, a.temperament.map((t) => el('span', { class: 'tag' }, t.replace('_', ' ')))),
+      el('div', { class: 'tags' }, a.temperament.map((t) => el('span', { class: 'tag' }, t.replace(/_/g, ' ')))),
       el('p', { class: 'desc' }, a.description || '')));
 }
 
