@@ -52,12 +52,19 @@ function jsonOnly(req, res, next) {
 
 // From Lab 7: some API Gateway emulators hand Lambda the body as a Buffer or
 // base64 text. Turn it into an object so validation sees the real fields.
+const MAX_BODY_BYTES = 20 * 1024; // same limit as express.json({ limit: '20kb' }) in app.js
+
 function bodyFix(req, res, next) {
   if (Buffer.isBuffer(req.body) || typeof req.body === 'string') {
     const raw = req.body.toString('utf8').trim();
     const decoded = /^[A-Za-z0-9+/=\s]+$/.test(raw) && !raw.startsWith('{')
       ? Buffer.from(raw, 'base64').toString('utf8')
       : raw;
+    // In Lambda, serverless-http hands over the already-read body, so express.json's
+    // 20 kB limit never runs: enforce the same limit here (413, like on a PC).
+    if (Buffer.byteLength(decoded, 'utf8') > MAX_BODY_BYTES) {
+      return res.status(413).json({ error: { code: 'PAYLOAD_TOO_LARGE', message: 'Request body is too large.' } });
+    }
     try {
       req.body = decoded ? JSON.parse(decoded) : {};
     } catch {
