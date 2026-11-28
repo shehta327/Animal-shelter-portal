@@ -1,0 +1,28 @@
+# Floci (local AWS emulator) exactly as the team runs it for the demo.
+#   docker compose -f infra/docker-compose.floci.yml up -d
+# Floci API:        http://localhost:4566
+# Floci Dash (UI):  http://localhost:4500   (started by Floci as a sidecar container)
+# Data is kept in the floci-data volume, so a restart keeps every table, bucket, user and secret.
+# No real AWS account or key is needed: the scripts use the dummy keys test/test.
+name: shelter-floci
+services:
+  floci:
+    image: floci/floci:latest
+    container_name: floci
+    ports: ["127.0.0.1:4566:4566"]
+    environment:
+      FLOCI_STORAGE_MODE: persistent
+      FLOCI_STORAGE_PERSISTENT_PATH: /app/data
+      FLOCI_SERVICES_UI_BIND_ADDRESS: "127.0.0.1"
+      FLOCI_BASE_URL: http://floci:4566
+      FLOCI_SERVICES_UI_IMAGE: ghcr.io/ofsazib/floci-dash:latest
+      FLOCI_SERVICES_UI_CONTAINER_NAME: floci-dash
+      FLOCI_SERVICES_UI_ENDPOINT_ENV: FLOCI_URL
+      FLOCI_SERVICES_UI_STATUS_PATH: /api/healthz
+      # FLOCI_HOSTNAME is left unset on purpose: presigned S3 URLs then use a host
+      # the browser can reach, so photo uploads work from the website.
+    volumes:
+      - floci-data:/app/data
+      - /var/run/docker.sock:/var/run/docker.sock
+volumes:
+  floci-data:

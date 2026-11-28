@@ -33,6 +33,23 @@ infra/
 tests/               see above
 ```
 
+## How to run it (Windows, Docker Desktop)
+Nothing to install except Docker Desktop and Node.js; the AWS CLI runs inside a small Docker image.
+Configuration and the only two real secrets are listed in [.env.example](.env.example) (placeholders only).
+
+1. Start Floci (local AWS) and its dashboard:
+   `docker compose -f infra/docker-compose.floci.yml up -d`  (API `localhost:4566`, Floci Dash `localhost:4500`)
+2. Create the shared platform once: `.\infra\run.ps1 platform.sh`
+3. Secrets, typed hidden into Secrets Manager (never into a file):
+   * Neon database for Applications (required): run `db/schema.sql` and `db/roles.sql` on your Neon project,
+     then `cd shelter-applications-service; .\infra\run.ps1 set-db-secret.sh`
+   * Resend email key (optional, emails are skipped without it): `.\infra\run.ps1 set-resend-key.sh`
+4. Deploy everything and add the demo animals with photos: `.\infra\deploy-all.ps1 -Seed`
+5. Open `http://localhost:4566/shelter-web/index.html`. Demo accounts and their fresh passwords are in
+   `infra/out/seed-users.txt` (git-ignored).
+6. Check it: `node tests/run-tests.mjs` (53 checks), `node shelter-visits-service/tests/visits-check.mjs --no-pause`,
+   `node shelter-animals-service/tests/animals-check.mjs --no-pause`, `.\infra\run.ps1 ../tests/cloud-checks.sh`.
+
 ## Local development (no cloud)
 Each service runs on a PC with `npm run dev` (ports 3001 to 3003). Serve the frontend with any static server on
 port 8080 and point `js/config.js` at the service you are working on.
